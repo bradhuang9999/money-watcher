@@ -8,7 +8,30 @@ $(document).ready(function() {
   registerEvent();
   registerHelper();
   settingUtil.settingLoad();
+  errorHandler();
 });
+
+function errorHandler() {
+  window.onerror = function (msg, url, lineNo, columnNo, error) {
+    var string = msg.toLowerCase();
+    var substring = "script error";
+    //if (string.indexOf(substring) > -1){
+    //  showMsg('Script Error: See Browser Console for Detail');
+    //} else {
+      var message = [
+        'Message: ' + msg,
+        'URL: ' + url,
+        'Line: ' + lineNo,
+        'Column: ' + columnNo,
+        'Error object: ' + JSON.stringify(error)
+      ].join(' - ');
+  
+      showMsg(message);
+    //}
+  
+    return false;
+  };
+}
 
 function registerHelper() {
   Handlebars.registerHelper('eq', function(arg1, arg2, options) {

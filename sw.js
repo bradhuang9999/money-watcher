@@ -1,4 +1,4 @@
-/* 0518 */
+/* 0521 */
 var cacheName = 'moneh-watcher';
 var filesToCache = [
   'index.html',
