@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="libs/bootstrap/5.0.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="libs/bootstrap4-toggle/3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
+    <link href="libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
+
+    <title>Money Watcher</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="images/icons/icon_152.png">
+    <meta name="theme-color" content="white"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Money Watcger">
+    <meta name="msapplication-TileImage" content="images/icons/icon_144.png">
+    <meta name="msapplication-TileColor" content="#FFFFFF">
+
+  </head>
+  <body>   
+    <div class="col-lg-8 mx-auto p-3 py-md-5">
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">
+            <img src="/images/icons/icon_128.png" width="30" height="30" class="d-inline-block align-top" alt="">
+            Money Watcher
+          </a>
+
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a id='navAddSpend' class="nav-link active" href="#">Add</a>
+              </li>
+              <li class="nav-item">
+                <a id='navSpendList' class="nav-link" href="#">Detail</a>
+              </li>
+              <li class="nav-item">
+                <a id='navSetting' class="nav-link" href="#">Setting</a>
+              </li>
+            </ul>
+            <div class="d-flex">
+              <button id="authorize_button" class="btn btn-outline-success" style="display: none;">Authorize</button>
+              <button id="signout_button" class="btn btn-outline-success" style="display: none;">Sign Out</button>
+              <button id="btnReload" class="btn btn-need-login btn-outline-success">Reload</button>
+            </div>
+          </div>
+        </div>
+      </nav> 
+      <main>
+        <div id='divSetting' class="container d-none">
+          <div class="mb-3">
+            <label for="inputSpreadsheetId" class="form-label">Spread Sheet ID</label>
+            <input type="text" class="form-control" id="inputSpreadsheetId">
+          </div>
+          <div class="mb-3">
+            <label for="inputSpendSheetName" class="form-label">Spend Sheet Name</label>
+            <input type="text" class="form-control" id="inputSpendSheetName">
+          </div>
+          <div class="mb-3">
+            <label for="inputSpendSheetId" class="form-label">Spend Sheet ID</label>
+            <input type="text" class="form-control" id="inputSpendSheetId">
+          </div>
+          <button id='btnSettingSave' class='btn btn-outline-primary w-100'>Save</button>
+        </div>
+
+        <div id='divSpendList' class="container d-none">
+          Spend List
+        </div>
+
+        <div id='divAddSpend' class="container">
+          <div class="row mt-1">
+            <div class="col-4">
+              <select id='sepndCate' class="form-select">
+                <option>食</option>
+                <option>衣</option>
+                <option>住</option>
+                <option>行</option>
+                <option>育</option>
+                <option>樂</option>
+                <option>健康</option>
+                <option>人事</option>
+              </select>
+            </div>
+            <div class="col-8">
+              <input id='sepndRemark' type='text' class='form-control w-100'>
+            </div>
+          </div>
+          <div class="row row-cols-2 mt-1">
+            <div class="col">
+              <input type="checkbox" id="spendTogether" data-toggle="toggle" data-on="公帳" data-off="私帳" data-height="30">
+            </div>
+            <div class="col">
+              <input type="checkbox" id="spendMust" data-toggle="toggle" data-on="必要" data-off="非必要" data-height="30">
+            </div>
+          </div>
+          <div class="row row-cols-1 mt-1">
+            <div class="col">
+              <span id='calcAmt' style='height: 24px;'>0</span>
+            </div>
+          </div>
+          <div class="row row-cols-3 mt-1">
+            <div class="col">
+              <button id='btnAmtAdd1' class='btn btn-outline-secondary w-100'>1</button>
+            </div>
+            <div class="col">
+              <button id='btnAmtAdd2' class='btn btn-outline-secondary w-100'>2</button>
+            </div>
+            <div class="col">
+              <button id='btnAmtAdd3' class='btn btn-outline-secondary w-100'>3</button>
+            </div>
+          </div>
+          <div class="row row-cols-3 mt-1">
+            <div class="col">
+              <button id='btnAmtAdd4' class='btn btn-outline-secondary w-100'>4</button>
+            </div>
+            <div class="col">
+              <button id='btnAmtAdd5' class='btn btn-outline-secondary w-100'>5</button>
+            </div>
+            <div class="col">
+              <button id='btnAmtAdd6' class='btn btn-outline-secondary w-100'>6</button>
+            </div>
+          </div>
+          <div class="row row-cols-3 mt-1">
+            <div class="col">
+              <button id='btnAmtAdd7' class='btn btn-outline-secondary w-100'>7</button>
+            </div>
+            <div class="col">
+              <button id='btnAmtAdd8' class='btn btn-outline-secondary w-100'>8</button>
+            </div>
+            <div class="col">
+              <button id='btnAmtAdd9' class='btn btn-outline-secondary w-100'>9</button>
+            </div>
+          </div>
+          <div class="row row-cols-3 mt-1">
+            <div class="col">
+              <button id='btnAmtAdd0' class='btn btn-outline-secondary w-100'>0</button>
+            </div>
+            <div class="col">
+              <button id='btnAmtDel' class='btn btn-outline-secondary w-100'>⌫</button>
+            </div>
+            <div class="col">
+              <input id='spendDate' data-provide="datepicker" data-date-format="yyyymmdd" class='form-control w-100' value='今天'>
+            </div>
+          </div>
+          <div class="row row-cols-ㄉ mt-1">
+            <div class="col">
+              <button id='btnAmtPlus' class='btn btn-outline-secondary w-100'>+</button>
+            </div>
+            <div class="col">
+              <button id='btnAmtOk' class='btn btn-outline-primary w-100'>ok</button>
+            </div>
+          </div>
+        </div>
+
+        
+      </main>
+
+      <footer class="pt-5 my-5 text-muted border-top">
+        <span class="fs-5" id="textStatus"></span><br>
+      </footer>
+    </div>
+
+    
+    <script id="templateSpendList" type="text/x-handlebars-template">
+      {{#each this}}
+      <div class="row row-cols-2">
+        <div class="col">{{4}}{{6}}</div>
+        <div class="col">{{#eq 7 "Y"}}必要{{else}}非必要{{/eq}}-{{#eq 3 "Y"}}公帳{{else}}私帳{{/eq}}-{{1}}</div>
+        <div class="col">{{5}}</div>
+        <div class="col">{{2}}</div>
+      </div>
+      {{/each}}
+    </script>
+
+
+    <script src="libs/jquery/3.6.0/jquery-3.6.0.min.js"></script>
+    <script src='libs/NoSleep/0.12.0/NoSleep.min.js'></script>
+    <script src='libs/date-fns/1.30.1/date_fns.min.js'></script>
+    <script src="libs/bootstrap/5.0.2/js/bootstrap.bundle.min.js"></script>
+    <script src="libs/bootstrap4-toggle/3.6.1/js/bootstrap4-toggle.min.js"></script>
+    <script src="libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="libs/handlebars/4.7.7/handlebars.min.js"></script>
+    <script src='js/googleSheet.js'></script>
+    <script src='js/index.js'></script>
+    
+    <script async defer src="https://apis.google.com/js/api.js"
+      onload="this.onload=function(){};handleClientLoad()"
+      onreadystatechange="if (this.readyState === 'complete') this.onload()">
+    </script>
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    -->
+  </body>
+</html>
