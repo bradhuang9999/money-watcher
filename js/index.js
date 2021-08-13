@@ -83,6 +83,8 @@ var settingUtil = (()=>{
     localStorage.setItem("spreadsheetId", document.getElementById('inputSpreadsheetId').value);
     localStorage.setItem("spendSheetName", document.getElementById('inputSpendSheetName').value);
     localStorage.setItem("spendSheetId", document.getElementById('inputSpendSheetId').value);
+
+    showMsg('Save Successful');
   };
 
   thisUtil.settingLoad = function() {
@@ -160,13 +162,13 @@ var calcUtil = (()=>{
     }
     else {//儲存模式
       let spendData = {};
-      spendData.ID = '';
+      spendData.ID = uuidv4();
       spendData.cate = document.getElementById('sepndCate').value;
       spendData.remark = document.getElementById('sepndRemark').value;
       spendData.together = document.getElementById('spendTogether').checked?"Y":"N";
       spendData.must = document.getElementById('spendMust').checked?"Y":"N";
       spendData.date = document.getElementById('spendDate').value;
-      spendData.time = '';
+      spendData.time = dateFns.format(new Date(), "HH:mm:ss");
       spendData.money = document.getElementById('calcAmt').innerText;
 
       if(spendData.date==='今天') {
@@ -182,61 +184,90 @@ var calcUtil = (()=>{
   return thisUtil;
 })();
 
+function uuidv4() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
+function showMsg(msgText) {
+  var msgHtml = `<div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+  <div class="toast-body">
+    ${msgText}
+  </div>
+</div>`;
+  $('#divToastContainer').append(msgHtml);
+  //var myToastEl = document.getElementById('myToastEl')
+  
+  var newToast = new bootstrap.Toast($('#divToastContainer .toast').last()[0]);
+  newToast.show();
+}
+
   var appendSpendData = function(spendDataArr) {
-    var params = {
-      // The ID of the spreadsheet to update.
-      spreadsheetId: settingUtil.getSpreadsheetId(),  // TODO: Update placeholder value.
-    };
-
-    var requestBody = {
-      "requests": []
-     };
-
-    for (let spendData of spendDataArr) {
-      let spendDataStr = [spendData.ID, 
-                          spendData.cate,
-                          spendData.remark,
-                          spendData.together,
-                          spendData.date,  
-                          spendData.money,
-                          spendData.time,
-                          spendData.must
-                        ].join(', ');
-
-      requestBody.requests.push({
-        "insertRange": {
-         "range": {
-          "sheetId": settingUtil.getSpendSheetId(),
-          "startRowIndex": 1,
-          "endRowIndex": 2
-         },
-         "shiftDimension": "ROWS"
-        }
-       });
-
-      requestBody.requests.push({
-        "pasteData": {
-         "data": spendDataStr,
-         "type": "PASTE_NORMAL",
-         "delimiter": ",",
-         "coordinate": {
-          "sheetId": settingUtil.getSpendSheetId(),
-          "rowIndex": 1,
-         }
-        }
-      });
-
-      console.log(JSON.stringify(params, null, ' '))
-      console.log(JSON.stringify(requestBody, null, ' '))
+    try {
+      var params = {
+        // The ID of the spreadsheet to update.
+        spreadsheetId: settingUtil.getSpreadsheetId(),  // TODO: Update placeholder value.
+      };
+  
+      var requestBody = {
+        "requests": []
+       };
+  
+      for (let spendData of spendDataArr) {
+        let spendDataStr = [spendData.ID, 
+                            spendData.cate,
+                            spendData.remark,
+                            spendData.together,
+                            spendData.date,  
+                            spendData.money,
+                            spendData.time,
+                            spendData.must
+                          ].join(', ');
+  
+        requestBody.requests.push({
+          "insertRange": {
+           "range": {
+            "sheetId": settingUtil.getSpendSheetId(),
+            "startRowIndex": 1,
+            "endRowIndex": 2
+           },
+           "shiftDimension": "ROWS"
+          }
+         });
+  
+        requestBody.requests.push({
+          "pasteData": {
+           "data": spendDataStr,
+           "type": "PASTE_NORMAL",
+           "delimiter": ",",
+           "coordinate": {
+            "sheetId": settingUtil.getSpendSheetId(),
+            "rowIndex": 1,
+           }
+          }
+        });
+  
+        console.log(JSON.stringify(params, null, ' '))
+        console.log(JSON.stringify(requestBody, null, ' '))
+      }
+  
+      var request = gapi.client.sheets.spreadsheets.batchUpdate(params, requestBody);
+        request.then(function(response) {
+          // TODO: Change code below to process the `response` object:
+          console.log(response.result);
+        }, function(reason) {
+          console.error('error: ' + reason.result.error.message);
+        });
+      
+      showMsg('Save Successful');
     }
-
-    var request = gapi.client.sheets.spreadsheets.batchUpdate(params, requestBody);
-      request.then(function(response) {
-        // TODO: Change code below to process the `response` object:
-        console.log(response.result);
-      }, function(reason) {
-        console.error('error: ' + reason.result.error.message);
-      });
+    catch(e) {
+      $('#divErrorInfo').html(JSON.stringify(e), null, "  ");
+      console.log(e);
+    }
+    
   };
 
   async function loadSpendList() {
@@ -259,7 +290,7 @@ var calcUtil = (()=>{
 
     }
     catch(e) {
-      $('#divSpendList').html(JSON.stringify(e), null, "  ");
+      $('#divErrorInfo').html(JSON.stringify(e), null, "  ");
       console.log(e);
     }
   }
